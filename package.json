@@ -1,0 +1,30 @@
+{
+  "name": "qsapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/touchcast/qsapi.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/touchcast/qsapi/issues"
+  },
+  "homepage": "https://github.com/touchcast/qsapi#readme",
+  "devDependencies": {
+    "babel-eslint": "^6.1.2",
+    "code": "^3.0.2",
+    "eslint-config-chasevida": "^0.10.0",
+    "mocha": "^3.0.2"
+  },
+  "dependencies": {
+    "babel-preset-es2015": "^6.14.0",
+    "babel-register": "^6.14.0",
+    "lodash": "^4.16.1"
+  }
+}

@@ -2,7 +2,6 @@ import {expect} from 'code'
 import {describe, before, it} from 'mocha'
 
 import Schema from '../src/schema'
-import {Number, String, Currency} from '../src/transforms'
 import {type, _default, transform} from '../src/symbols'
 import * as _ from 'lodash'
 

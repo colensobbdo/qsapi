@@ -10,11 +10,13 @@ var obj = {
     products: [
         {
             id: 'product1',
-            price: 55
+            price: 55,
+            name: 'some product 1'
         },
         {
             id: 'product2',
-            price: "66.5"
+            price: "66.5",
+            name: 'some product 2'
         },
         {
             id: 'product3',
@@ -39,6 +41,39 @@ var schema = {
 }
 
 describe('QSAPI Schema Mapper', () => {
+
+    it('should handle the default correctly', (done) => {
+
+        var newSchema = {
+            'products': {
+                id: {
+                    [type]: 'string',
+                },
+
+                price: {
+                    [_default]: 'Free'
+                },
+
+                name: {
+                    [_default]: 'a product'
+                }
+            }
+        }
+
+        var newObj = Schema(obj, newSchema)
+
+        // make sure 'a product' is set to the object which doesn't have a name
+        expect(newObj.products[2].name).to.equal('a product')
+
+        // make sure that price is not overwritten
+        for (var prop in newObj.products) {
+            var product = newObj.products[prop]
+            expect(product.price).to.not.equal('Free')
+        }
+
+        done()
+    })
+
     it('should parse the data correctly', (done) => {
 
         var newObj = Schema(obj, schema)

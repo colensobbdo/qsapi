@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 
-import {type, _defaut, transform} from '../symbols'
+import {type, _default, transform} from '../symbols'
 
 export default (data, schema) => {
 
@@ -8,30 +8,46 @@ export default (data, schema) => {
 
     var flatData = paths(data)
     var flatSchema = paths(schema)
+    var defaults = []
+    
+    for (var key in flatSchema) {
+        var path = flatSchema[key]
+        var item = _.get(schema, path)
+        if (item[_default]) {
+            var parentPath = path.split('.')
+            var prop = parentPath.pop()
+            parentPath.join('.')
 
+            defaults[parentPath] = { [prop]: item[_default] }
+        }
+    }
 
     for (var key in flatData) {
         var path = flatData[key]
         var searchPath = path.replace(/\[\d+\]\./gi, '.')
+        var item = _.get(schema, searchPath.split('.'))
 
         if (flatSchema.indexOf(searchPath) > -1) {
 
             var value = _.get(data, path)
-            var item = _.get(schema, searchPath.split('.'))
 
-            if (item && (item[type] || item[transform])) {
+            if (item && (item[type] || item[transform] || item[_default])) {
 
                 // check if the schema requires this be transformed
                 if (item[transform]) {
                     value = item[transform](value)
                 }
 
+                var parentPath = searchPath.split('.')
+                var prop = parentPath.pop()
+                parentPath = parentPath.join('.')
+
                 _.set(parsed, path, value)
             }
         }
     }
 
-    return parsed
+    return applyDefaults(parsed, defaults)
 }
 
 const paths = (obj, parentKey) => {
@@ -55,4 +71,26 @@ const paths = (obj, parentKey) => {
     }
 
     return _.concat(result, parentKey || [])
+}
+
+const applyDefaults = (obj, defaults) => {
+
+
+    for (var key in obj) {
+        if (_.isArray(obj[key])) {
+            applyDefaults(obj[key], defaults[key])
+        }
+        else {
+            // iterate over defaults
+            
+            _.mapKeys(defaults, (val, defaultKey) => {
+                if ( ! obj[key][defaultKey]) {
+                    obj[key][defaultKey] = val
+                }
+            })
+        }
+    }
+    
+
+    return obj
 }

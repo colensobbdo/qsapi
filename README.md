@@ -73,11 +73,12 @@ var schema = {
 ```
 
 The above schema defines a few things:
+
 | Property | Description | Usage |
 | -------- | ----------- | ----- |
-| `type` | the `type` `Symbol` | this is used to indicate to the schema mapping what the output type should be |
-| `_default` | the `_default` `Symbol` | the key's value is used if there is no data for this specific property |
-| `transform` | the `transform` `Symbol` | A function that gets evaluated, the first parameter is the data of the property being evaluated |
+| `type` | the `type` <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | this is used to indicate to the schema mapping what the output type should be |
+| `_default` | the `_default` <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | the key's value is used if there is no data for this specific property |
+| `transform` | the `transform` <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | A function that gets evaluated, the first parameter is the data of the property being evaluated |
 
 Using the <a href='#schema1'>schema</a> defined above, we can parse our <a href='#dataSource1'>data source</a>:
 

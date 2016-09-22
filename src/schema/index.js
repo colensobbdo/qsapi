@@ -1,53 +1,63 @@
 import * as _ from 'lodash'
 
-import {type, _default, transform} from '../symbols'
+import {type, _default, transform} from './symbols'
 
-export default (data, schema) => {
+export default {
 
-    var parsed = []
-
-    var flatData = paths(data)
-    var flatSchema = paths(schema)
-    var defaults = []
+    type,
     
-    for (var key in flatSchema) {
-        var path = flatSchema[key]
-        var item = _.get(schema, path)
-        if (item[_default]) {
-            var parentPath = path.split('.')
-            var prop = parentPath.pop()
-            parentPath.join('.')
+    _default,
+    
+    transform,
 
-            defaults[parentPath] = { [prop]: item[_default] }
-        }
-    }
+    parse: (data, schema) => {
 
-    for (var key in flatData) {
-        var path = flatData[key]
-        var searchPath = path.replace(/\[\d+\]\./gi, '.')
-        var item = _.get(schema, searchPath.split('.'))
+        var parsed = []
 
-        if (flatSchema.indexOf(searchPath) > -1) {
-
-            var value = _.get(data, path)
-
-            if (item && (item[type] || item[transform] || item[_default])) {
-
-                // check if the schema requires this be transformed
-                if (item[transform]) {
-                    value = item[transform](value)
-                }
-
-                var parentPath = searchPath.split('.')
+        var flatData = paths(data)
+        var flatSchema = paths(schema)
+        var defaults = []
+        
+        for (var key in flatSchema) {
+            var path = flatSchema[key]
+            var item = _.get(schema, path)
+            if (item[_default]) {
+                var parentPath = path.split('.')
                 var prop = parentPath.pop()
-                parentPath = parentPath.join('.')
+                parentPath.join('.')
 
-                _.set(parsed, path, value)
+                defaults[parentPath] = { [prop]: item[_default] }
             }
         }
+
+        for (var key in flatData) {
+            var path = flatData[key]
+            var searchPath = path.replace(/\[\d+\]\./gi, '.')
+            var item = _.get(schema, searchPath.split('.'))
+
+            if (flatSchema.indexOf(searchPath) > -1) {
+
+                var value = _.get(data, path)
+
+                if (item && (item[type] || item[transform] || item[_default])) {
+
+                    // check if the schema requires this be transformed
+                    if (item[transform]) {
+                        value = item[transform](value)
+                    }
+
+                    var parentPath = searchPath.split('.')
+                    var prop = parentPath.pop()
+                    parentPath = parentPath.join('.')
+
+                    _.set(parsed, path, value)
+                }
+            }
+        }
+
+        return applyDefaults(parsed, defaults)
     }
 
-    return applyDefaults(parsed, defaults)
 }
 
 const paths = (obj, parentKey) => {

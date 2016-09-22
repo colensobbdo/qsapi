@@ -1,8 +1,9 @@
 import {expect} from 'code'
 import {describe, before, it} from 'mocha'
 
-import Schema from '../src/schema'
-import {type, _default, transform} from '../src/symbols'
+import SchemaMap from '../src/schema'
+const {parse, type, _default, transform} = SchemaMap
+
 import * as _ from 'lodash'
 
 
@@ -60,7 +61,7 @@ describe('QSAPI Schema Mapper', () => {
             }
         }
 
-        var newObj = Schema(obj, newSchema)
+        var newObj = parse(obj, newSchema)
 
         // make sure 'a product' is set to the object which doesn't have a name
         expect(newObj.products[2].name).to.equal('a product')
@@ -76,10 +77,63 @@ describe('QSAPI Schema Mapper', () => {
 
     it('should parse the data correctly', (done) => {
 
-        var newObj = Schema(obj, schema)
+        var newObj = parse(obj, schema)
         expect(newObj).to.be.exist()
         expect(newObj.products[0].id).to.exist()
         expect(newObj.products[0].price).to.exist()
+
+        done()
+    })
+
+
+    it('should parse the object from the README', (done) => {
+        var data = {
+            products: [
+                {
+                    id: 'product1',
+                    name: 'product 1',
+                    description: 'the first product',
+                    price: 55
+                }, 
+                {
+                    id: 'product2',
+                    name: 'product 2',
+                    description: 'the second product',
+                    price: '66.50'
+                },
+                {
+                    id: 'product3',
+                    name: 'product 3',
+                    price: '$11.00'
+                }
+            ]
+        }
+
+
+        var schema = {
+            products: {
+                id: {
+                    [type]: 'string'
+                },
+
+                name: {
+                    [type]: 'string'
+                },
+
+                description: {
+                    [_default]: 'N/a'
+                },
+
+                price: {
+                    [transform]: (price) => {
+                        return parseFloat(price.toString().replace('$', ''))
+                    }
+                }
+            }
+        }
+
+        var mappedData = parse(data, schema)
+        expect(mappedData).to.exist()
 
         done()
     })

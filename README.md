@@ -46,8 +46,8 @@ Using QSAPI schema mapping, we can define a schema for how we want our data to b
 <a name='schema1'></a>
 
 ```js
-import {SchemaMap} from 'qsapi'
-const {type, _default, transform} = SchemaMap
+import SchemaMap from '../src/schema'
+const {parse, type, _default, transform} = SchemaMap
 
 var schema = {
     products: {
@@ -84,7 +84,7 @@ Using the <a href='#schema1'>schema</a> defined above, we can parse our <a href=
 ```js
 // ...(continued from above)...
 
-var mappedData = SchemaMap(data, schema)
+var mappedData = parse(data, schema)
 
 /*
     mappedData.products:

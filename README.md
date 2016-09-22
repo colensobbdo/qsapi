@@ -73,6 +73,7 @@ var schema = {
 ```
 
 The above schema defines a few things:
+
 | Property | Description | Usage |
 | -------- | ----------- | ----- |
 | `type` | the `type` `Symbol` | this is used to indicate to the schema mapping what the output type should be |

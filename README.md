@@ -1,11 +1,46 @@
 # QSAPI
 
+Quasi-API - Hand sanitiser for your API
 
+* <a href="#intro">Why?</a>
+* <a href="#usage">Usage</a>
+    * <a href="#fetch">Fetch</a>
+    * <a href="#api">API</a>
+    * <a href="#schema">Schema mapping</a>
+* <a href="#examples">Examples</a>
+    * <a href="#fetchExample">Fetch example</a>
+    * <a href="#schemaExample">Schema mapping example</a>
+* <a href="#todo">TODO</a>
+
+<a name="intro"></a>
+# Why?
+TODO
+
+<a name="usage"></a>
+# Usage
+
+<a name="fetch"></a>
+## Fetch
+TODO
+
+<a name="api"></a>
+## API
+TODO
+
+<a name="schema"></a>
 ## Schema mapping
 
 A schema can be provided to QSAPI to transform the result of the API call to the expected object.
 This can be used to make sure the data coming back from the API is uniform and consistant to what the UI is expecting.
 
+
+# Examples
+
+<a name="fetchExample"></a>
+## Fetch example
+TODO
+
+<a name="schemaExample"></a>
 ## Schema mapping example
 
 Think for a moment that you were dealing with an API that returned a list of products, and price:

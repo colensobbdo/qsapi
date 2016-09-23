@@ -8,7 +8,7 @@ Quasi-API - Hand sanitiser for your API
     * <a href="#api">API</a>
     * <a href="#schema">Schema mapping</a>
 * <a href="#examples">Examples</a>
-    * <a href="#advancedExample">Fetch example</a>
+    * <a href="#fetchExample">Fetch example</a>
     * <a href="#schemaExample">Schema mapping example</a>
 * <a href="#todo">TODO</a>
 

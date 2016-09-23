@@ -64,8 +64,8 @@ describe('Fetch', () => {
     it('should bailout', (done) => {
 
         var opts = {
-            url: 'http://this.doesnt.exist.co.nz',
-            timeout: 1000,
+            url: 'http://httpstat.us/500',
+            timeout: 2000,
             bailout: () => {
                 return true
             }
@@ -75,7 +75,7 @@ describe('Fetch', () => {
         instance.then((res) => { 
             if (res.bailed) {
                 done()
-            } 
+            }
         })
     })
 
@@ -110,6 +110,27 @@ describe('Fetch', () => {
                     done()
                 }
             })
+        })
+    })
+
+    it('should retry', (done) => {
+
+        var expectedRetryCount = 1
+        var retryCount = 0
+
+        var opts = {
+            url: 'http://httpstat.us/500',
+            timeout: 2000,
+            retry: () => {
+                retryCount++
+            },
+            retryCount: expectedRetryCount,
+        }
+
+        var instance = Fetch.req(opts)
+        instance.catch((err) => {
+            expect(expectedRetryCount).to.equal(retryCount)
+            done()
         })
     })
 

@@ -11,6 +11,8 @@ var defaults = {
     cache: false
 }
 
+
+
 const options = (opts) => {
 
     if (_.isPlainObject(opts)) {
@@ -41,15 +43,35 @@ const request = (opts) => {
         return Promise.resolve(response)
     }
 
-    var instance = axios.create(opts)
-    
-    if (opts.cache) {
-        instance.interceptors.response.use((config) => {
+    var instance = axios.create(opts)    
 
+    instance.interceptors.response.use((config) => {
+        if (opts.cache) {
             Cache.set(opts.url, config)
+        }
 
-            return config
-        })
+        return config
+    })
+
+    if (opts.retry) {
+
+        const retry = (err) => {
+            if (err.response.status === 500 && err.config && err.config.retryCount > 0) {
+                err.config.retryCount--
+                
+                if (typeof opts.retry === 'function') {
+                    opts.retry()
+                }
+
+                var instance = axios.create(err.config)
+                instance.interceptors.response.use(undefined, retry);
+                return instance[err.config.method](err.config.url)
+            }
+
+            throw err;
+        }
+
+        instance.interceptors.response.use(undefined, retry);
     }
 
     return instance[opts.method](url)

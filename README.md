@@ -8,11 +8,11 @@ Quasi-API - Hand sanitiser for your API
     * <a href="#api">API</a>
     * <a href="#schema">Schema mapping</a>
 * <a href="#examples">Examples</a>
-    * <a href="#advancedExample">Advanced example</a>
+    * <a href="#advancedExample">Fetch example</a>
     * <a href="#schemaExample">Schema mapping example</a>
 * <a href="#todo">TODO</a>
 
-<a name="why"></a>
+<a name="intro"></a>
 # Why?
 TODO
 
@@ -36,7 +36,11 @@ This can be used to make sure the data coming back from the API is uniform and c
 
 # Examples
 
-<a name="#schemaExample"></a>
+<a name="fetchExample"></a>
+## Fetch example
+TODO
+
+<a name="schemaExample"></a>
 ## Schema mapping example
 
 Think for a moment that you were dealing with an API that returned a list of products, and price:

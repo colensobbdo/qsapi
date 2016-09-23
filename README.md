@@ -150,3 +150,10 @@ var mappedData = parse(data, schema)
 
 After the mapping has been applied, each field is consistant in type, and also has the same fields.
 `description` was added to `product3`, `price` was transformed from being mixed type in the data to a `float` in the mapped data
+
+# TODO
+* [x] Schema mapping
+* [ ] Schema type transformation
+* [ ] Fetch API
+* [ ] Fetch setup to allow for retries, timeouts, bailouts
+* [ ] Caching setup to allow for bailouts

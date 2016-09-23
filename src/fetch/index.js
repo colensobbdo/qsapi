@@ -2,8 +2,6 @@ import * as _ from 'lodash'
 import axios from 'axios'
 var Cache = require('./cache')
 
-console.log(Cache)
-
 var defaults = {
     timeout: 1000,
     method: 'get',
@@ -36,7 +34,6 @@ const request = (opts) => {
     }
 
     if (opts.cache && Cache.get(opts.url)) {
-        debugger
         var response = Cache.get(opts.url)
         response.cached = true
 

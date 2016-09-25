@@ -5,30 +5,30 @@ Quasi-API - Hand sanitiser for your API
 * <a href="#intro">Why?</a>
 * <a href="#usage">Usage</a>
     * <a href="#fetch">Fetch</a>
-    * <a href="#api">API</a>
-    * <a href="#schema">Schema mapping</a>
+    * <a href="#schema">Schema modelling</a>
 * <a href="#examples">Examples</a>
-    * <a href="#fetchExample">Fetch example</a>
+    * <a href="#fetchExample">Fetch examples</a>
     * <a href="#schemaExample">Schema mapping example</a>
+* <a href="#api">API</a>
 * <a href="#todo">TODO</a>
 
 <a name="intro"></a>
 # Why?
-TODO
+Sometimes API's are bad. Sometimes they fail, Sometimes they don't.
+Your application shouldn't have to deal with intermittent API issues, It shouldn't have to deal with mismatched property types, or properties missing altogether.
 
 <a name="usage"></a>
 # Usage
 
 <a name="fetch"></a>
 ## Fetch
-TODO
 
-<a name="api"></a>
-## API
-TODO
+QSAPI presumes that the API being called is unstable and often unavailable. It will by default attempt to fetch the resource data 3 times before rejecting the original promise. This default can be configured during initialisation of the QSAPI call.
+
+Using `fetch`, in its most basic form, all you need to supply is a `url`, everything else is handled by the default values.
 
 <a name="schema"></a>
-## Schema mapping
+## Schema modelling
 
 A schema can be provided to QSAPI to transform the result of the API call to the expected object.
 This can be used to make sure the data coming back from the API is uniform and consistant to what the UI is expecting.
@@ -37,8 +37,56 @@ This can be used to make sure the data coming back from the API is uniform and c
 # Examples
 
 <a name="fetchExample"></a>
-## Fetch example
-TODO
+## Fetch examples
+
+*Basic example*
+
+Make a GET request to google.com, timeout after 1 second, don't retry.
+
+```js
+var opts = {
+    url: 'http://www.google.com',
+
+    // timeout after 1 second
+    timeout: 1000,
+
+    // don't retry
+    retry: false
+}
+
+var instance = Fetch.req(opts)
+instance.then((res) => {
+
+    console.log(res) 
+})
+```
+
+*Advanced example*:
+
+
+```js
+var retryCount = 3
+var opts = {
+    url: 'http://httpstat.us/500',
+    timeout: 2000,
+    retry: (req) => {
+        console.log(`retry attempt #${retryCount - req.retryCount + 1} ${req.url}`)
+    },
+    retryCount,
+}
+
+var instance = Fetch.req(opts)
+
+// on successful response
+instance.then((res) => {
+    console.log('Success!', res)
+})
+
+// once retryCount reaches 0 and 
+instance.catch((err) => {
+    console.log(`${opts.url} could not be fetched: ${err.code}`)
+})
+```
 
 <a name="schemaExample"></a>
 ## Schema mapping example
@@ -76,7 +124,7 @@ The API response above is not great, we have inconsitant fields which is common 
 If we were dealing with this API in the front end logic of our application, we would need to add a lot of bulk and complexity to be evaluated at runtime just to make sure the properties exist, and they are the type that we are expecting.
 Not only does this bulk the application out, it makes it generally harder to read and scale for any developers being on-boarded.
 
-Using QSAPI schema mapping, we can define a schema for how we want our data to be structured, and typed:
+Using QSAPI schema mapping, we can define a schema for how we want our dataretryCount -  to be structured, and typed:
 
 <a name='schema1'></a>
 
@@ -151,10 +199,16 @@ var mappedData = parse(data, schema)
 After the mapping has been applied, each field is consistant in type, and also has the same fields.
 `description` was added to `product3`, `price` was transformed from being mixed type in the data to a `float` in the mapped data
 
+
+<a name="api"></a>
+# API
+TODO
+
 <a name="todo"></a>
 # TODO
 * [x] Schema mapping
 * [ ] Schema type transformation
-* [ ] Fetch API
-* [ ] Fetch setup to allow for retries, timeouts, bailouts
-* [ ] Caching setup to allow for bailouts
+* [x] Fetch API
+* [x] Fetch setup to allow for retries, timeouts, bailouts
+* [x] Pre-fetch caching
+* [ ] Post-fetch caching

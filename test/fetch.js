@@ -54,7 +54,8 @@ describe('Fetch', () => {
 
         var opts = {
             url: 'http://www.google.co.nz',
-            timeout: 1000
+            timeout: 1000,
+            retry: false
         }
 
         var instance = Fetch.req(opts)
@@ -66,6 +67,7 @@ describe('Fetch', () => {
         var opts = {
             url: 'http://httpstat.us/500',
             timeout: 2000,
+            retry: false,
             bailout: () => {
                 return true
             }
@@ -83,7 +85,8 @@ describe('Fetch', () => {
 
         var opts = {
             url: 'http://google.com',
-            timeout: 5
+            timeout: 5,
+            retry: false
         }
 
         var instance = Fetch.req(opts)

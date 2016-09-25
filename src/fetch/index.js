@@ -6,7 +6,9 @@ var defaults = {
     timeout: 1000,
     method: 'get',
     bailout: () => { return false },
-    cache: false
+    cache: false,
+    retryCount:3,
+    retry: true
 }
 
 
@@ -53,16 +55,16 @@ const request = (opts) => {
     if (opts.retry) {
 
         const retry = (err) => {
-            if (err.response.status === 500 && err.config && err.config.retryCount > 0) {
+            if (err.response.status !== 200 && err.config && err.config.retryCount > 0) {
                 err.config.retryCount--
                 
                 if (typeof opts.retry === 'function') {
-                    opts.retry()
+                    opts.retry(err.config)
                 }
 
                 var instance = axios.create(err.config)
                 instance.interceptors.response.use(undefined, retry);
-                return instance[err.config.method](err.config.url)
+                return instance[err.config.method.toLowerCase()](err.config.url)
             }
 
             throw err;
@@ -71,7 +73,7 @@ const request = (opts) => {
         instance.interceptors.response.use(undefined, retry);
     }
 
-    return instance[opts.method](url)
+    return instance[opts.method.toLowerCase()](url)
 }
 
 export default {

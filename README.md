@@ -231,13 +231,51 @@ The options is an object that will accept the following:
 | `maxContentLength` | A number that defines the maximum length of the response content | Number | - |
 | `maxRedirects` | A number that defines the maximum number of redirects (Node.js only) | Number | `5` |
 
+*Example:*
+
+```js
+var opts = {
+    url: 'http://whatismyip.azurewebsites.net/json',
+    cache: true,
+    retry: (request) => {
+        console.log(`Failed to load ${opts.url}, retrying`)
+    },
+    responseType: 'json'
+}
+
+var retry = (err) => {
+    if (err.retryCount === 0) {
+        console.log(`failed to load ${err.url}, giving up`)
+    }
+}
+
+var instance = Fetch.req(opts)
+instance.then((res) => {
+
+    console.log(`received response from ${opts.url}`)
+
+    // make the request again
+    Fetch.req(opts)
+        .catch(retry)
+        .then((res) => {
+            if (res.cached) {
+                console.log(`loaded response from cache for ${opts.url}`)
+            }
+            else {
+                console.log(`received response from ${opts.url}`)
+            }
+        })
+})
+.catch(retry)
+```
+
 ## `Fetch.setup(config)`
 
 This method will set up the fetch instance with a cache. 
 
 If you wish to use caching and want something a bit more elaborate than in-memory caching
 
-Example:
+*Example:*
 
 ```js
 Fetch.setup({

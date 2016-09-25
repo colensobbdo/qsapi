@@ -278,12 +278,15 @@ If you wish to use caching and want something a bit more elaborate than in-memor
 *Example:*
 
 ```js
+
+var cacheStore = []
+
 Fetch.setup({
     cache: {
         get: (key) => {
             // this will get called with the URL of the requested resources.
             // Must return a response.
-            return {}
+            return cacheStore[key]
         },
 
         set: (key, value) => {
@@ -299,6 +302,7 @@ Fetch.setup({
                     config: {}
                 }
             */
+            cacheStore[key] = value
         }
     }
 })

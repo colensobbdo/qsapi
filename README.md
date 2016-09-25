@@ -236,37 +236,47 @@ The options is an object that will accept the following:
 ```js
 var opts = {
     url: 'http://whatismyip.azurewebsites.net/json',
+
+    // cache the response
     cache: true,
+
+    // called if request fails, the existance of this function causes retrying to be enabled.
     retry: (request) => {
         console.log(`Failed to load ${opts.url}, retrying`)
     },
+
+    // the expected response type
     responseType: 'json'
 }
 
-var retry = (err) => {
+// define an on error function that show when we give up.
+var onError = (err) => {
     if (err.retryCount === 0) {
         console.log(`failed to load ${err.url}, giving up`)
     }
 }
 
+// setup the request instance
 var instance = Fetch.req(opts)
 instance.then((res) => {
 
+    // when we have a response - output to the terminal
     console.log(`received response from ${opts.url}`)
 
-    // make the request again
-    Fetch.req(opts)
-        .catch(retry)
-        .then((res) => {
-            if (res.cached) {
-                console.log(`loaded response from cache for ${opts.url}`)
-            }
-            else {
-                console.log(`received response from ${opts.url}`)
-            }
-        })
+    // then make the request again
+    Fetch.req(opts).then((res) => {
+
+        // when we have the response again, check if it was pulled from the cache
+        if (res.cached) {
+            console.log(`loaded response from cache for ${opts.url}`)
+        }
+        else {
+            console.log(`received response from ${opts.url}`)
+        }
+    })
+    .catch(onError)
 })
-.catch(retry)
+.catch(onError)
 ```
 
 ## `Fetch.setup(config)`

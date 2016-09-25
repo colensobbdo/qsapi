@@ -202,7 +202,69 @@ After the mapping has been applied, each field is consistant in type, and also h
 
 <a name="api"></a>
 # API
-TODO
+
+## `Fetch.req(options)`
+
+This is the main fetch function that returns a fetch instance (<a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise">`Promise`</a>)
+
+QSAPI uses <a target="_blank" href="https://github.com/mzabriskie/axios">axios</a> under the hood so any property supported by <a target="_blank" href="https://github.com/mzabriskie/axios">axios</a> is also supported by QSAPI.
+
+The options is an object that will accept the following:
+
+| Property | Description | Type | Default |
+| -------- | ----------- | ---- | ------- |
+| `url` | The url to fetch | String | - |
+| `method` | The HTTP Method to use | String | `'GET'` |
+| `bailout` | A function that gets evaluated, if the function returns true, the request will *not* run. | Function | `() => { return false }` |
+| `cache` | Define if the response should be stored in the cache or not | Boolean | `false` |
+| `retry` | A value to define if the request should retry on failure. If value is a function, it will get evaluated on retry | Function/Boolean | `true` |
+| `retryCount` | A number to define how many times the request should retry | Number | `3` |
+| `headers` | Define any headers that you many required | Object | `{}` |
+| `params` | Define any URL parameters to be sent with a GET | Object | `{}` |
+| `data` | Define any data to be sent with a POST | Object, FormData, File, Blob, Stream | `{}` |
+| `auth` | Send HTTP Basic auth credentials. This will set a `Authorization` header | Object | `{}` |
+| `responseType` | Indicate what type of data the response will carry | String | `'json'` |
+| `xsrfCookieName` | The name of the cookie to use as a xsrf token | String | `'XSRF-TOKEN'` |
+| `xsrfHeaderName` | The name of the header to use as a xsrf token | String | `'X-XSRF-TOKEN'` |
+| `onUploadProgress` | A function that is called with the progressEvent of an upload | Function | `() => {}` |
+| `onDownloadProgress` | A function that is called with the progressEvent of a download | Function | `() => {}` |
+| `maxContentLength` | A number that defines the maximum length of the response content | Number | - |
+| `maxRedirects` | A number that defines the maximum number of redirects (Node.js only) | Number | `5` |
+
+## `Fetch.setup(config)`
+
+This method will set up the fetch instance with a cache. 
+
+If you wish to use caching and want something a bit more elaborate than in-memory caching
+
+Example:
+
+```js
+Fetch.setup({
+    cache: {
+        get: (key) => {
+            // this will get called with the URL of the requested resources.
+            // Must return a response.
+            return {}
+        },
+
+        set: (key, value) => {
+            // this will get called when the requested resource returns with a response.
+            /*
+                EG:
+                key: 'http://www.google.com'
+                value: {
+                    data: {},
+                    status: 200,
+                    statusText: 'OK',
+                    headers: {},
+                    config: {}
+                }
+            */
+        }
+    }
+})
+```
 
 <a name="todo"></a>
 # TODO
@@ -210,5 +272,5 @@ TODO
 * [ ] Schema type transformation
 * [x] Fetch API
 * [x] Fetch setup to allow for retries, timeouts, bailouts
-* [x] Pre-fetch caching
-* [ ] Post-fetch caching
+* [ ] Pre-fetch caching
+* [x] Post-fetch caching

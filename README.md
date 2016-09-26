@@ -379,5 +379,5 @@ Fetch.setup({
 * [ ] Schema type transformation
 * [x] Fetch API
 * [x] Fetch setup to allow for retries, timeouts, bailouts
-* [ ] Pre-fetch caching
+* [x] Pre-fetch caching
 * [x] Post-fetch caching

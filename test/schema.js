@@ -1,8 +1,8 @@
 import {expect} from 'code'
 import {describe, before, it} from 'mocha'
 
-import SchemaMap from '../src/schema'
-const {parse, type, _default, transform} = SchemaMap
+import {Schema} from '../src'
+const {parse, type, initial, transform} = Schema
 
 import * as _ from 'lodash'
 
@@ -52,11 +52,11 @@ describe('QSAPI Schema Mapper', () => {
                 },
 
                 price: {
-                    [_default]: 'Free'
+                    [initial]: 'Free'
                 },
 
                 name: {
-                    [_default]: 'a product'
+                    [initial]: 'a product'
                 }
             }
         }
@@ -110,7 +110,7 @@ describe('QSAPI Schema Mapper', () => {
         }
 
 
-        var schema = {
+        var readmeSchema = {
             products: {
                 id: {
                     [type]: 'string'
@@ -121,7 +121,7 @@ describe('QSAPI Schema Mapper', () => {
                 },
 
                 description: {
-                    [_default]: 'N/a'
+                    [initial]: 'N/a'
                 },
 
                 price: {
@@ -132,7 +132,7 @@ describe('QSAPI Schema Mapper', () => {
             }
         }
 
-        var mappedData = parse(data, schema)
+        var mappedData = parse(data, readmeSchema)
         expect(mappedData).to.exist()
 
         done()

@@ -1,3 +1,6 @@
 module.exports = {
-    "extends": "eslint-config-chasevida"
+    "extends": "./node_modules/eslint-config-chasevida/index.js",
+    "parserOptions": {
+        "sourceType": "module"
+    }
 }

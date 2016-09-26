@@ -10,6 +10,8 @@ Quasi-API - Hand sanitiser for your API
     * <a href="#fetchExample">Fetch examples</a>
     * <a href="#schemaExample">Schema mapping example</a>
 * <a href="#api">API</a>
+    * <a href="#fetchReq">Fetch.req(options)</a>
+    * <a href="#fetchConfig">Fetch.setup(config)</a>
 * <a href="#todo">TODO</a>
 
 <a name="intro"></a>
@@ -19,6 +21,36 @@ Your application shouldn't have to deal with intermittent API issues, It shouldn
 
 <a name="usage"></a>
 # Usage
+
+```js
+import {Qsapi, Schema} from 'qsapi'
+const {type, transform, initial} = Schema 
+
+var schema = {
+    ip: {
+        [type]: 'String',
+        [initial]: '127.0.0.1',
+        [transform]: (ip) => {
+            return Number(ip.replace('.',''))
+        }
+    }
+}
+
+var initialData = {
+    ip: '127.0.0.1'
+}
+
+var qsapi = Qsapi({ 
+    options: { 
+        url: 'https://whatsmyip.azurewebsites.net/json',
+        timeout: 2000,
+        retryCount: 5 
+    },
+    schema,
+    intiialData
+})
+
+```
 
 <a name="fetch"></a>
 ## Fetch
@@ -44,6 +76,7 @@ This can be used to make sure the data coming back from the API is uniform and c
 Make a GET request to google.com, timeout after 1 second, don't retry.
 
 ```js
+import {Fetch} from 'qsapi'
 var opts = {
     url: 'http://www.google.com',
 
@@ -65,6 +98,8 @@ instance.then((res) => {
 
 
 ```js
+import {Fetch} from 'qsapi'
+
 var retryCount = 3
 var opts = {
     url: 'http://httpstat.us/500',
@@ -129,8 +164,8 @@ Using QSAPI schema mapping, we can define a schema for how we want our dataretry
 <a name='schema1'></a>
 
 ```js
-import SchemaMap from '../src/schema'
-const {parse, type, _default, transform} = SchemaMap
+import Schema from 'qsapi'
+const {parse, type, initial, transform} = Schema
 
 var schema = {
     products: {
@@ -143,7 +178,7 @@ var schema = {
         },
 
         description: {
-            [_default]: 'N/a'
+            [initial]: 'N/a'
         },
 
         price: {
@@ -157,11 +192,11 @@ var schema = {
 
 The above schema defines a few things:
 
-| Property | Description | Usage |
-| -------- | ----------- | ----- |
-| `type` | the `type` <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | this is used to indicate to the schema mapping what the output type should be |
-| `_default` | the `_default` <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | the key's value is used if there is no data for this specific property |
-| `transform` | the `transform` <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | A function that gets evaluated, the first parameter is the data of the property being evaluated |
+| Property | Description | Type | Default |
+| -------- | ----------- | ---- | ------- |
+| `type` | Used to indicate to the schema mapping what the output `type` should be | <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | - |
+| `initial` | The value to be used if there is no data for this specific property | <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | - |
+| `transform` | A function that gets evaluated, the first parameter is the data of the property being evaluated | <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | - |
 
 Using the <a href='#schema1'>schema</a> defined above, we can parse our <a href='#dataSource1'>data source</a>:
 
@@ -203,6 +238,21 @@ After the mapping has been applied, each field is consistant in type, and also h
 <a name="api"></a>
 # API
 
+## `Qsapi(options, schema [, initialData])`
+
+| Property | Description | Type | Default |
+| -------- | ----------- | ---- | ------- |
+| `options` | Options for the <a href="#fetchReq">fetch request</a> | Object | `{}` |
+| `schema` | The schema that the response fetch will be transformed to | Object | `{}` |
+| `initialData` | If supplied, no request will be made, the initialData will be parsed through the schema | Object | `{}` |
+
+*Methods:*
+
+| Method | Description | Returns |
+| ------ | ----------- | ------- |
+| `fetch` | See <a href="#fetchReq">`Fetch.req(options)`</a> | <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise">`Promise`</a> |
+
+<a name="fetchReq"></a>
 ## `Fetch.req(options)`
 
 This is the main fetch function that returns a fetch instance (<a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise">`Promise`</a>)
@@ -214,6 +264,7 @@ The options is an object that will accept the following:
 | Property | Description | Type | Default |
 | -------- | ----------- | ---- | ------- |
 | `url` | The url to fetch | String | - |
+| `schema` | The schema to use for the request | Object | - |
 | `method` | The HTTP Method to use | String | `'GET'` |
 | `bailout` | A function that gets evaluated, if the function returns true, the request will *not* run. | Function | `() => { return false }` |
 | `cache` | Define if the response should be stored in the cache or not | Boolean | `false` |
@@ -234,6 +285,8 @@ The options is an object that will accept the following:
 *Example:*
 
 ```js
+import {Fetch} from 'qsapi'
+
 var opts = {
     url: 'http://whatismyip.azurewebsites.net/json',
 
@@ -279,6 +332,7 @@ instance.then((res) => {
 .catch(onError)
 ```
 
+<a name="fetchSetup"></a>
 ## `Fetch.setup(config)`
 
 This method will set up the fetch instance with a cache. 
@@ -288,6 +342,7 @@ If you wish to use caching and want something a bit more elaborate than in-memor
 *Example:*
 
 ```js
+import {Fetch} from 'qsapi'
 
 var cacheStore = []
 

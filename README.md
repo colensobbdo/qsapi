@@ -190,14 +190,6 @@ var schema = {
 }
 ```
 
-The above schema defines a few things:
-
-| Property | Description | Type | Default |
-| -------- | ----------- | ---- | ------- |
-| `type` | Used to indicate to the schema mapping what the output `type` should be | <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | - |
-| `initial` | The value to be used if there is no data for this specific property | <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | - |
-| `transform` | A function that gets evaluated, the first parameter is the data of the property being evaluated | <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | - |
-
 Using the <a href='#schema1'>schema</a> defined above, we can parse our <a href='#dataSource1'>data source</a>:
 
 ```js
@@ -372,6 +364,152 @@ Fetch.setup({
     }
 })
 ```
+
+## `Schema`
+
+Schema exports all of the symbols that we use to run specific logic on properties:
+
+| Property | Description | Type | Default |
+| -------- | ----------- | ---- | ------- |
+| `type` | Used to indicate to the schema mapping what the output `type` should be | <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | - |
+| `initial` | The value to be used if there is no data for this specific property | <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | - |
+| `transform` | A function that gets evaluated, the first parameter is the data of the property being evaluated | <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | - |
+| `custom` | Used to define properties that may not exist on the object. The parent of the property is passed as a property | <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | - |
+| `required` | If this child property is not present, then the object will be removed from the result | <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | - |
+
+### `Schema.parse(data, model)`
+
+This will parse the data using the model supplied, a new object will be returned.
+
+### `Schema.type`
+
+Define that the object should include this property and it should be a <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof">JavaScript type</a> (Not implemented yet)
+
+### `Schema.initial`
+
+The default value to use for a property.
+
+*Example:*
+
+```js
+var data = {
+    products: [{
+        id: 1,
+        name: 'car'
+    }]
+}
+
+var schema = {
+    products: [{
+        id: {
+            [type]: 'number'
+        }
+
+        name: {
+            [type]: 'string'
+        },
+
+        description: {
+            [initial]: 'One of our products'
+        }
+    }]
+}
+```
+
+Once parsed, the new data object will contain a product with an id, name and a description of 'One of our products'
+
+### `Schema.transform`
+
+Transform the object using the data object as a property.
+
+*Example:*
+
+```js
+var data = {
+    products: [{
+        id: 1,
+        sku: 'someSku1'
+    }]
+}
+
+var schema = {
+    products: [{
+        id: {
+            [type]: 'number'
+        },
+
+        sku: {
+            [transform]: (sku) => {
+                return sku.toUpperCase()
+            }
+        }
+    }]
+}
+```
+
+This will return an object with the products array, any obj in the product array that has a sku will be transformed toUpperCase()
+
+### `Schema.custom`
+
+If you there is no property by the name of what you want on the object, you can generate one by using the `[custom]` Symbol.
+
+*Example:*
+
+```js
+var data = {
+    products: [{
+        id: 1,
+        sku: 'someSku1'
+    }]
+}
+var schema = {
+    products: [{
+        id: {
+            [type]: 'number'
+        },
+
+        [custom]: (product) => {
+            return {
+                name: product.sku.toLowerCase().replace(/\d+/gi, '')
+            }
+        }
+    }]
+}
+```
+
+This will add a `name` property to the objects in the array.
+
+### `Schema.required`
+
+If specific data is required, and the object is pointless without it, you can use the required property.
+
+*Example:*
+
+```js
+var data = {
+    products: [{
+        id: 1,
+        name: 'a plant',
+        sku: 'someSku1'
+    }, {
+        id: 2,
+        sku: 'someSku2'
+    }]
+}
+var schema = {
+    products: [{
+        id: {
+            [type]: 'number'
+        },
+
+        name: {
+            [required]: true
+        }
+    }]
+}
+```
+
+This will make sure that any objects in the products array will contain a name, in the above example, the products array will contain 1 object.
 
 <a name="todo"></a>
 # TODO

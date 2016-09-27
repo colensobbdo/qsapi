@@ -52,8 +52,22 @@ const validateRequired = (obj, requiredData) => {
 
     var removeRequiredsForKey = (key) => {
         return _.mapKeys(requiredData, (val, requiredKey) => {
-            if ( ! obj[key][requiredKey] && requiredKey !== '' && val) {
-                obj.splice(key, 1)
+
+            if (requiredKey === '') {
+                return
+            }
+
+            if (typeof val === 'function' && typeof obj[key] !== 'undefined') {
+                var keepField = val(obj[key][requiredKey])
+                if ( ! keepField) {
+                    obj[key] = undefined
+                }
+            }
+            else if (typeof val === 'boolean' && typeof obj[key] !== 'undefined' && ( ! obj[key][requiredKey] || obj[key][requiredKey] === '')) {
+
+                if (val) {
+                    obj[key] = undefined
+                }
             }
         })
     }
@@ -64,6 +78,20 @@ const validateRequired = (obj, requiredData) => {
         }
         else {
             removeRequiredsForKey(key)
+        }
+    }
+
+    return obj
+}
+
+const removeUndefined = (obj) => {
+
+    for (var key in obj) {
+        if (_.isArray(obj[key])) {
+            removeUndefined(obj[key])
+        }
+        else {
+            obj = _.pull(obj, undefined)
         }
     }
 
@@ -104,7 +132,7 @@ export default {
             }
 
             if (item[required]) {
-                requiredData[parentPath] = {[prop]: item[required]}
+                requiredData[parentPath] = Object.assign({}, requiredData[parentPath], { [prop]: item[required] })
             }
         }
 
@@ -144,6 +172,6 @@ export default {
 
         var defaultedData = applyDefaults(parsed, defaults)
         var parsedData = validateRequired(parsed, requiredData)
-        return parsedData
+        return removeUndefined(parsedData)
     }
 }

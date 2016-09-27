@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 
-import {type, custom, initial, transform} from './symbols'
+import {type, custom, required, initial, transform} from './symbols'
 
 const paths = (obj, parentKey) => {
     var result
@@ -48,6 +48,28 @@ const applyDefaults = (obj, defaults) => {
     return obj
 }
 
+const validateRequired = (obj, requiredData) => {
+
+    var removeRequiredsForKey = (key) => {
+        return _.mapKeys(requiredData, (val, requiredKey) => {
+            if ( ! obj[key][requiredKey] && requiredKey !== '' && val) {
+                obj.splice(key, 1)
+            }
+        })
+    }
+
+    for (var key in obj) {
+        if (_.isArray(obj[key])) {
+            validateRequired(obj[key], requiredData[key])
+        }
+        else {
+            removeRequiredsForKey(key)
+        }
+    }
+
+    return obj
+}
+
 export default {
 
     type,
@@ -58,6 +80,8 @@ export default {
 
     custom,
 
+    required,
+
     parse: (data, schema) => {
 
         var parsed = []
@@ -65,16 +89,22 @@ export default {
         var flatData = paths(data)
         var flatSchema = paths(schema)
         var defaults = []
+        var requiredData = []
 
         for (var key in flatSchema) {
             let path = flatSchema[key]
             let item = _.get(schema, path)
+            let parentPath = path.replace(/\[\d+\]\./, '.').split('.')
+            let prop = parentPath.pop()
+            parentPath.join('.')
+
             if (item[initial]) {
-                let parentPath = path.split('.')
-                let prop = parentPath.pop()
-                parentPath.join('.')
 
                 defaults[parentPath] = {[prop]: item[initial]}
+            }
+
+            if (item[required]) {
+                requiredData[parentPath] = {[prop]: item[required]}
             }
         }
 
@@ -91,7 +121,7 @@ export default {
                     continue
                 }
 
-                if (item[type]) {
+                if (item[type] || item[required]) {
                     _.set(parsed, path, value)
                 }
 
@@ -109,10 +139,11 @@ export default {
                     value = item[transform](value)
                     _.set(parsed, path, value)
                 }
-
             }
         }
 
-        return applyDefaults(parsed, defaults)
+        var defaultedData = applyDefaults(parsed, defaults)
+        var parsedData = validateRequired(parsed, requiredData)
+        return parsedData
     }
 }

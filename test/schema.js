@@ -2,10 +2,9 @@ import {expect} from 'code'
 import {describe, before, it} from 'mocha'
 
 import {Schema} from '../src'
-const {parse, type, initial, transform} = Schema
+const {parse, required, type, initial, transform} = Schema
 
 import * as _ from 'lodash'
-
 
 var obj = {
     products: [
@@ -27,7 +26,7 @@ var obj = {
 }
 
 var schema = {
-    'products': {
+    'products': [{
 
         id: {
             [type]: 'string'
@@ -38,7 +37,7 @@ var schema = {
                 return parseFloat(price.toString().replace('$', ''), 2)
             }
         }
-    }
+    }]
 }
 
 describe('QSAPI Schema Mapper', () => {
@@ -46,7 +45,7 @@ describe('QSAPI Schema Mapper', () => {
     it('should handle the default correctly', (done) => {
 
         var newSchema = {
-            'products': {
+            'products': [{
                 id: {
                     [type]: 'string',
                 },
@@ -58,7 +57,7 @@ describe('QSAPI Schema Mapper', () => {
                 name: {
                     [initial]: 'a product'
                 }
-            }
+            }]
         }
 
         var newObj = parse(obj, newSchema)
@@ -111,7 +110,7 @@ describe('QSAPI Schema Mapper', () => {
 
 
         var readmeSchema = {
-            products: {
+            products: [{
                 id: {
                     [type]: 'string'
                 },
@@ -129,11 +128,58 @@ describe('QSAPI Schema Mapper', () => {
                         return parseFloat(price.toString().replace('$', ''))
                     }
                 }
-            }
+            }]
         }
 
         var mappedData = parse(data, readmeSchema)
         expect(mappedData).to.exist()
+
+        done()
+    })
+
+    it('should handle required correctly', (done) => {
+        var data = {
+            products: [
+                {
+                    id: 'product1',
+                    name: 'product 1',
+                    description: 'the first product',
+                    price: 55
+                }, 
+                {
+                    id: 'product2',
+                    description: 'the second product',
+                    price: '66.50'
+                },
+                {
+                    id: 'product3',
+                    name: 'product 3',
+                    price: '$11.00'
+                }
+            ]
+        }
+
+
+        var readmeSchema = {
+            products: [{
+                id: {
+                    [type]: 'string'
+                },
+
+                name: {
+                    [type]: 'string',
+                    [initial]: 'fdsa'
+                },
+
+                description: {
+                    [required]: true
+                }
+            }]
+        }
+
+        var mappedData = parse(data, readmeSchema)
+        expect(mappedData).to.exist()
+        expect(mappedData.products.length).to.equal(2)
 
         done()
     })

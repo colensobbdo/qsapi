@@ -116,6 +116,7 @@ export default {
 
         var flatData = paths(data)
         var flatSchema = paths(schema)
+        flatSchema.push('')
         var defaults = []
         var requiredData = []
 
@@ -126,12 +127,12 @@ export default {
             let prop = parentPath.pop()
             parentPath.join('.')
 
-            if (item[initial]) {
+            if (item && item[initial]) {
 
                 defaults[parentPath] = {[prop]: item[initial]}
             }
 
-            if (item[required]) {
+            if (item && item[required]) {
                 requiredData[parentPath] = Object.assign({}, requiredData[parentPath], { [prop]: item[required] })
             }
         }
@@ -154,7 +155,6 @@ export default {
                 }
 
                 if (item[custom]) {
-                    //var currentValue = _.get(parsed, path)
                     var customValue = item[custom](value)
                     if (customValue) {
                         var currentValue = _.get(parsed, path)
@@ -167,6 +167,13 @@ export default {
                     value = item[transform](value)
                     _.set(parsed, path, value)
                 }
+            }
+        }
+
+        if (schema[custom]) {
+            var customValue = schema[custom](data)
+            if (customValue) {
+                parsed = Object.assign({}, parsed, customValue)
             }
         }
 

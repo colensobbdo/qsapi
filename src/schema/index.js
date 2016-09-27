@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 
-import {type, initial, transform} from './symbols'
+import {type, custom, initial, transform} from './symbols'
 
 const paths = (obj, parentKey) => {
     var result
@@ -56,6 +56,8 @@ export default {
 
     transform,
 
+    custom,
+
     parse: (data, schema) => {
 
         var parsed = []
@@ -78,22 +80,36 @@ export default {
 
         for (var dataKey in flatData) {
             let path = flatData[dataKey]
-            let searchPath = path.replace(/\[\d+\]\./gi, '.')
-            let item = _.get(schema, searchPath.split('.'))
+            let searchPath = path.replace(/\[\d+\]/, '[0]')
 
             if (flatSchema.indexOf(searchPath) >= 0) {
 
+                let item = _.get(schema, searchPath)
                 var value = _.get(data, path)
 
-                if (item && (item[type] || item[transform] || item[initial])) {
+                if ( ! item) {
+                    continue
+                }
 
-                    // check if the schema requires this be transformed
-                    if (item[transform]) {
-                        value = item[transform](value)
-                    }
-
+                if (item[type]) {
                     _.set(parsed, path, value)
                 }
+
+                if (item[custom]) {
+                    //var currentValue = _.get(parsed, path)
+                    var customValue = item[custom](value)
+                    if (customValue) {
+                        var currentValue = _.get(parsed, path)
+                        _.set(parsed, path, Object.assign({}, currentValue, customValue))
+                    }
+                }
+
+                // check if the schema requires this be transformed
+                if (item[transform]) {
+                    value = item[transform](value)
+                    _.set(parsed, path, value)
+                }
+
             }
         }
 

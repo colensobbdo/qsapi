@@ -159,7 +159,7 @@ The API response above is not great, we have inconsitant fields which is common 
 If we were dealing with this API in the front end logic of our application, we would need to add a lot of bulk and complexity to be evaluated at runtime just to make sure the properties exist, and they are the type that we are expecting.
 Not only does this bulk the application out, it makes it generally harder to read and scale for any developers being on-boarded.
 
-Using QSAPI schema mapping, we can define a schema for how we want our dataretryCount -  to be structured, and typed:
+Using QSAPI schema mapping, we can define a schema for how we want our data to be structured, and typed:
 
 <a name='schema1'></a>
 

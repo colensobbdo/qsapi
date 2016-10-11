@@ -4,11 +4,14 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "build": "babel src --out-dir lib"
   },
   "git": {
-    "pre-commit": "make test && babel src --out-dir lib",
-    "post-merge": "npm i"
+    "scripts": {
+      "pre-commit": "make test && npm run build",
+      "post-merge": "npm i"
+    }
   },
   "repository": {
     "type": "git",

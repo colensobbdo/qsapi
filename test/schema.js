@@ -2,7 +2,7 @@ import {expect} from 'code'
 import {describe, before, it} from 'mocha'
 
 import {Schema} from '../src'
-const {parse, required, type, initial, transform} = Schema
+const {parse, required, type, initial, transform, rename} = Schema
 
 import * as _ from 'lodash'
 
@@ -134,6 +134,39 @@ describe('QSAPI Schema Mapper', () => {
         var mappedData = parse(data, readmeSchema)
         expect(mappedData).to.exist()
 
+        done()
+    })
+
+    it('should handle rename correctly', (done) => {
+        var renameData = {
+            products: [
+                {
+                    ID: 123
+                },
+                {
+                    id: 456
+                }
+            ]
+        }
+
+        var renameSchema = {
+            products: [{
+                ID: {
+                    [rename]: 'id'
+                },
+
+                id: {
+                    [type]: 'number'
+                }
+            }]
+        }
+
+        var mappedData = parse(renameData, renameSchema)
+        expect(mappedData).to.exist()
+        expect(mappedData.products[0].id).to.exist()
+        expect(mappedData.products[0].id).to.equal(123)
+        expect(mappedData.products[1].id).to.exist()
+        expect(mappedData.products[1].id).to.equal(456)
         done()
     })
 

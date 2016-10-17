@@ -376,6 +376,7 @@ Schema exports all of the symbols that we use to run specific logic on propertie
 | `transform` | A function that gets evaluated, the first parameter is the data of the property being evaluated | <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | - |
 | `custom` | Used to define properties that may not exist on the object. The parent of the property is passed as a property | <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | - |
 | `required` | If this child property is not present, then the object will be removed from the result | <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | - |
+| `rename` | Used to rename the field to a new field, the value of the symbol is the name of the new field | <a target="_blank" href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol">`Symbol`</a> | - |
 
 ### `Schema.parse(data, model)`
 
@@ -396,6 +397,7 @@ var data = {
     products: [{
         id: 1,
         name: 'car'
+        SKU: '123'
     }]
 }
 
@@ -409,6 +411,10 @@ var schema = {
             [type]: 'string'
         },
 
+        SKU: {
+            [rename]: 'sku'
+        },
+
         description: {
             [initial]: 'One of our products'
         }
@@ -416,7 +422,7 @@ var schema = {
 }
 ```
 
-Once parsed, the new data object will contain a product with an id, name and a description of 'One of our products'
+Once parsed, the new data object will contain a product with an id, name, sku and a description of 'One of our products'
 
 ### `Schema.transform`
 

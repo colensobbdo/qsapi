@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 
-import {type, custom, required, initial, transform} from './symbols'
+import {type, custom, required, initial, transform, rename} from './symbols'
 
 const paths = (obj, parentKey) => {
     var result
@@ -110,6 +110,8 @@ export default {
 
     required,
 
+    rename,
+
     parse: (data, schema) => {
 
         var parsed = []
@@ -166,6 +168,12 @@ export default {
                 if (item[transform]) {
                     value = item[transform](value)
                     _.set(parsed, path, value)
+                }
+
+                // check if the schema requires this be renamed
+                if (item[rename]) {
+                    var newPath = `${path.substr(0, path.lastIndexOf('.'))}.${item[rename]}`
+                    _.set(parsed, newPath, value)
                 }
             }
         }

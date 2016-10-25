@@ -1,6 +1,6 @@
-export const type = Symbol('type')
-export const initial = Symbol('default')
-export const transform = Symbol('transform')
-export const custom = Symbol('custom')
-export const required = Symbol('required')
-export const rename = Symbol('rename')
+export const type = 'QSAPI_type'
+export const initial = 'QSAPI_default'
+export const transform = 'QSAPI_transform'
+export const custom = 'QSAPI_custom'
+export const required = 'QSAPI_required'
+export const rename = 'QSAPI_rename'

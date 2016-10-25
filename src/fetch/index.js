@@ -57,9 +57,9 @@ const request = (params) => {
     if (opts.retry) {
 
         const retry = (err) => {
-            if (err.response && err.response.status !== 200 && err.config && err.config.retryCount > 0) {
+            if (((err.response && err.response.status !== 200) || err.code === 'ECONNABORTED') && err.config && err.config.retryCount > 0) {
 
-                // eslint complainin about err.config.retryConfig--
+                // eslint complaining about err.config.retryConfig--
                 err.config.retryCount = err.config.retryCount - 1
 
                 if (typeof opts.retry === 'function') {
@@ -67,11 +67,13 @@ const request = (params) => {
                 }
 
                 var retryInstance = axios.create(err.config)
-                instance.interceptors.response.use(undefined, retry)
+                retryInstance.interceptors.response.use(undefined, retry)
                 return retryInstance[err.config.method.toLowerCase()](err.config.url)
             }
+            else {
 
-            throw err
+                throw err
+            }
         }
 
         instance.interceptors.response.use(undefined, retry)

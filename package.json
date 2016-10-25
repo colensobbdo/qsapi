@@ -26,6 +26,7 @@
   "devDependencies": {
     "babel-cli": "^6.16.0",
     "babel-eslint": "^6.1.2",
+    "babel-plugin-transform-object-assign": "^6.8.0",
     "code": "^3.0.2",
     "eslint-config-chasevida": "^0.10.0",
     "git-scripts": "^0.2.1",

@@ -1,3 +1,5 @@
+require('babel-polyfill')
+
 import Schema from './schema'
 import Fetch from './fetch'
 

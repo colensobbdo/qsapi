@@ -1,19 +1,28 @@
-import * as _ from 'lodash'
+import concat from 'lodash/concat'
+import flatMap from 'lodash/flatMap'
+import get from 'lodash/get'
+import isArray from 'lodash/isArray'
+import isPlainObject from 'lodash/isPlainObject'
+import keys from 'lodash/keys'
+import map from 'lodash/map'
+import mapKeys from 'lodash/mapKeys'
+import pull from 'lodash/pull'
+import set from 'lodash/set'
 
 import {type, custom, required, initial, transform, rename} from './symbols'
 
 const paths = (obj, parentKey) => {
     var result
 
-    if (_.isArray(obj)) {
+    if (isArray(obj)) {
         var index = 0
-        result = _.flatMap(obj, function (newObj) {
+        result = flatMap(obj, function (newObj) {
             return paths(newObj, (parentKey || '') + '[' + index ++ + ']')
         })
     }
-    else if (_.isPlainObject(obj)) {
-        result = _.flatMap(_.keys(obj), function (key) {
-            return _.map(paths(obj[key], key), function (subkey) {
+    else if (isPlainObject(obj)) {
+        result = flatMap(keys(obj), function (key) {
+            return map(paths(obj[key], key), function (subkey) {
                 return (parentKey ? parentKey + '.' : '') + subkey
             })
         })
@@ -22,14 +31,14 @@ const paths = (obj, parentKey) => {
         result = []
     }
 
-    return _.concat(result, parentKey || [])
+    return concat(result, parentKey || [])
 }
 
 const applyDefaults = (obj, defaults) => {
 
     var mapDefaultsForKey = (key) => {
 
-        return _.mapKeys(defaults, (val, defaultKey) => {
+        return mapKeys(defaults, (val, defaultKey) => {
             if ( ! obj[key][defaultKey] && defaultKey !== '') {
                 obj[key][defaultKey] = val
             }
@@ -37,7 +46,7 @@ const applyDefaults = (obj, defaults) => {
     }
 
     for (var key in obj) {
-        if (_.isArray(obj[key])) {
+        if (isArray(obj[key])) {
             applyDefaults(obj[key], defaults[key])
         }
         else {
@@ -51,7 +60,7 @@ const applyDefaults = (obj, defaults) => {
 const validateRequired = (obj, requiredData) => {
 
     var removeRequiredsForKey = (key) => {
-        return _.mapKeys(requiredData, (val, requiredKey) => {
+        return mapKeys(requiredData, (val, requiredKey) => {
 
             if (requiredKey === '') {
                 return
@@ -73,7 +82,7 @@ const validateRequired = (obj, requiredData) => {
     }
 
     for (var key in obj) {
-        if (_.isArray(obj[key])) {
+        if (isArray(obj[key])) {
             validateRequired(obj[key], requiredData[key])
         }
         else {
@@ -87,11 +96,11 @@ const validateRequired = (obj, requiredData) => {
 const removeUndefined = (obj) => {
 
     for (var key in obj) {
-        if (_.isArray(obj[key])) {
+        if (isArray(obj[key])) {
             removeUndefined(obj[key])
         }
         else {
-            obj = _.pull(obj, undefined)
+            obj = pull(obj, undefined)
         }
     }
 
@@ -124,7 +133,7 @@ export default {
 
         for (var key in flatSchema) {
             let path = flatSchema[key]
-            let item = _.get(schema, path)
+            let item = get(schema, path)
             let parentPath = path.replace(/\[\d+\]\./, '.').split('.')
             let prop = parentPath.pop()
             parentPath.join('.')
@@ -145,35 +154,35 @@ export default {
 
             if (flatSchema.indexOf(searchPath) >= 0) {
 
-                let item = _.get(schema, searchPath)
-                var value = _.get(data, path)
+                let item = get(schema, searchPath)
+                var value = get(data, path)
 
                 if ( ! item) {
                     continue
                 }
 
                 if (item[type] || item[required]) {
-                    _.set(parsed, path, value)
+                    set(parsed, path, value)
                 }
 
                 if (item[custom]) {
                     var customValue = item[custom](value)
                     if (customValue) {
-                        var currentValue = _.get(parsed, path)
-                        _.set(parsed, path, Object.assign({}, currentValue, customValue))
+                        var currentValue = get(parsed, path)
+                        set(parsed, path, Object.assign({}, currentValue, customValue))
                     }
                 }
 
                 // check if the schema requires this be transformed
                 if (item[transform]) {
                     value = item[transform](value)
-                    _.set(parsed, path, value)
+                    set(parsed, path, value)
                 }
 
                 // check if the schema requires this be renamed
                 if (item[rename]) {
                     var newPath = `${path.substr(0, path.lastIndexOf('.'))}.${item[rename]}`
-                    _.set(parsed, newPath, value)
+                    set(parsed, newPath, value)
                 }
             }
         }

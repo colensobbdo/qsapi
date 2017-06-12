@@ -1,4 +1,5 @@
-import * as _ from 'lodash'
+import assign from 'lodash/assign'
+import isPlainObject from 'lodash/isPlainObject'
 import axios from 'axios'
 var Cache = require('./cache')
 
@@ -15,11 +16,11 @@ var defaults = {
 
 const options = (opts) => {
 
-    if (_.isPlainObject(opts)) {
-        opts = _.assign({}, defaults, opts)
+    if (isPlainObject(opts)) {
+        opts = assign({}, defaults, opts)
     }
     else {
-        opts = _.assign({}, defaults, {
+        opts = assign({}, defaults, {
             url: opts
         })
     }

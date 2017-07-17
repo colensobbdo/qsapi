@@ -162,4 +162,28 @@ describe('Fetch', () => {
             done()
         }
     })
+
+    it('should handle urlencoded POST data', (done) => {
+        var expectedRetryCount = 1
+        var retryCount = 0
+
+        var opts = {
+            url: 'https://httpbin.org/post',
+            method: 'POST',
+            timeout: 20000,
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded'
+            },
+            data: {
+                foo: 'bar'
+            }
+        }
+
+        var instance = Fetch.req(opts)
+        instance.then(body => {
+            expect(body.data.form).to.equal({foo: 'bar'})
+            expect(body.data.headers['Content-Type']).to.equal('application/x-www-form-urlencoded')
+            done()
+        })
+    })
 })

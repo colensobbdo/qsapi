@@ -1,6 +1,8 @@
 import assign from 'lodash/assign'
 import isPlainObject from 'lodash/isPlainObject'
 import axios from 'axios'
+import querystring from 'querystring'
+
 var Cache = require('./cache')
 
 var defaults = {
@@ -80,7 +82,16 @@ const request = (params) => {
         instance.interceptors.response.use(undefined, retry)
     }
 
-    return instance[opts.method.toLowerCase()](url)
+    if (opts.hasOwnProperty('headers') && 
+        opts.headers.hasOwnProperty(['content-type']) &&
+        opts.headers['content-type'].toLowerCase() === 'application/x-www-form-urlencoded' &&
+        Object.keys(opts.data).length > 0) {
+
+        return instance[opts.method.toLowerCase()](url, querystring.stringify(opts.data))
+    }
+    else {
+        return instance[opts.method.toLowerCase()](url)
+    }
 }
 
 export default {

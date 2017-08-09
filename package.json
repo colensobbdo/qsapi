@@ -1,7 +1,7 @@
 {
   "name": "qsapi",
   "version": "1.1.0",
-  "description": "",
+  "description": "Sanitise your API with a schema so your app doesn't have to.",
   "main": "lib/index.js",
   "scripts": {
     "test": "make test",
@@ -15,14 +15,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/touchcast/qsapi.git"
+    "url": "git+https://github.com/colensobbdo/qsapi"
   },
-  "author": "",
+  "author": "Jay Baker <logikal@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/touchcast/qsapi/issues"
+    "url": "https://github.com/colensobbdo/qsapi/issues"
   },
-  "homepage": "https://github.com/touchcast/qsapi#readme",
+  "homepage": "https://github.com/colensobbdo/qsapi#readme",
   "devDependencies": {
     "babel-cli": "^6.16.0",
     "babel-eslint": "^6.1.2",

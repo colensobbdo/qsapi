@@ -82,7 +82,7 @@ const request = (params) => {
         instance.interceptors.response.use(undefined, retry)
     }
 
-    if (opts.hasOwnProperty('headers') && 
+    if (opts.hasOwnProperty('headers') &&
         opts.headers.hasOwnProperty(['content-type']) &&
         opts.headers['content-type'].toLowerCase() === 'application/x-www-form-urlencoded' &&
         Object.keys(opts.data).length > 0) {
@@ -90,7 +90,7 @@ const request = (params) => {
         return instance[opts.method.toLowerCase()](url, querystring.stringify(opts.data))
     }
     else {
-        return instance[opts.method.toLowerCase()](url)
+        return instance[opts.method.toLowerCase()](url, opts.data)
     }
 }
 
